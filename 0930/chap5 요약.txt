@@ -1,0 +1,148 @@
+
+
+1. 박스 배치 및 유형 제어 (Layout & Position)
+-------------------------------------------------------------------
+- display 프로퍼티: 박스의 출력 유형 설정 (block, inline, inline-block, none)
+- position 프로퍼티: 웹 페이지 내 태그 배치 방식 지정 (static, relative, absolute, fixed)
+- 기타 배치 속성: float(유동 배치), z-index(쌓임 순서), visibility(가시성), overflow(넘침 처리)
+
+/* 예제 코드: 박스 유형 및 position/z-index/overflow 활용 */
+<style>
+  /* display 설정 */
+  div.block-box { display: block; width: 100px; height: 60px; }
+  div.inline-box { display: inline-block; width: 50px; height: 50px; }
+  div.none-box { display: none; } /* 화면에서 숨김 및 공간 제거 */
+
+  /* relative: 기본 위치 기준 상대 이동 */
+  #rel-item:hover {
+    position: relative;
+    left: 20px; top: 20px;
+    background: green;
+  }
+
+  /* absolute: 지정된 기준 위치에 절대 배치 */
+  #abs-item {
+    position: absolute;
+    left: 50px; top: 30px;
+  }
+
+  /* fixed: 브라우저 화면 우하단 고정 */
+  #fixed-banner {
+    position: fixed;
+    bottom: 10px; right: 10px;
+    background: red; color: white;
+  }
+
+  /* float & z-index & overflow */
+  #sidebar { float: right; width: 8em; }
+  #card1 { position: absolute; z-index: 2; left: 10px; }
+  #card2 { position: absolute; z-index: 7; left: 40px; }
+  p.scroll-box { width: 15em; height: 3em; overflow: scroll; }
+</style>
+
+2. 리스트 스타일링 및 가로 내비게이션 메뉴
+-------------------------------------------------------------------
+- list-style-type: 마커 모양 지정 (disc, circle, square, decimal, none 등)
+- list-style-image: 사용자 정의 이미지 마커 설정
+- list-style-position: 마커 위치 지정 (inside, outside)
+- 가로 메뉴바 구현: display: inline-block 및 list-style-type: none 사용
+
+/* 예제 코드: 리스트로 가로 메뉴바 만들기 */
+<style>
+  #menubar { background: olive; }
+  #menubar ul { margin: 0; padding: 0; }
+  #menubar ul li {
+    display: inline-block;  /* 가로 배치 */
+    list-style-type: none; /* 마커 제거 */
+    padding: 0px 15px;
+  }
+  #menubar ul li a {
+    color: white;
+    text-decoration: none;  /* 밑줄 제거 */
+  }
+  #menubar ul li a:hover {
+    color: violet;          /* 마우스 오버 시 색상 변환 */
+  }
+</style>
+
+<nav id="menubar">
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Espresso</a></li>
+    <li><a href="#">Cafe Latte</a></li>
+  </ul>
+</nav>
+
+3. 표(Table) 스타일링 및 응용
+-------------------------------------------------------------------
+- border-collapse: collapse: 중복된 표 테두리를 하나로 합침
+- nth-child(even): 짝수 번째 행에 다른 배경색을 적용하여 줄무늬 표 생성
+- :hover: 마우스 커서가 올라간 행의 배경색 동적 변경
+
+/* 예제 코드: 마우스 오버 반응형 표 만들기 */
+<style>
+  table { border-collapse: collapse; }
+  td, th { padding: 8px; width: 100px; text-align: left; }
+  thead { background: darkgray; color: yellow; }
+  tbody tr:nth-child(even) { background: aliceblue; } /* 짝수 행 줄무늬 */
+  tbody tr:hover { background: pink; }               /* 마우스 오버 반응 */
+</style>
+
+4. 폼(Form) 요소 스타일링
+-------------------------------------------------------------------
+- input[type=text]: 속성 선택자로 특정 폼 요소 지정
+- :hover / :focus: 마우스가 올라오거나 포커스를 받을 때의 스타일 정의
+
+/* 예제 코드: 폼 요소 반응형 스타일링 */
+<style>
+  input[type=text] {
+    color: red;
+    border: 2px solid skyblue;
+    border-radius: 5px;
+  }
+  input:hover, textarea:hover {
+    background: aliceblue;
+  }
+  input[type=text]:focus {
+    font-size: 120%;
+  }
+</style>
+
+5. 동적 시각 효과 (애니메이션, 전환, 변환)
+-------------------------------------------------------------------
+- 애니메이션 (@keyframes): 시간 흐름에 따른 상태 변화 설정
+- 전환 (transition): CSS 속성값의 변화를 지정한 시간에 걸쳐 서서히 진행
+- 변환 (transform): 회전(rotate), 기울임(skew), 이동(translate), 크기 조절(scale)
+
+/* 예제 코드: 동적 효과 예시 */
+<style>
+  /* 1. 애니메이션: 3초 동안 500% -> 100% 서서히 축소 무한 반복 */
+  @keyframes bomb {
+    from { font-size: 500%; }
+    to   { font-size: 100%; }
+  }
+  h3.animate-title {
+    animation-name: bomb;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+  }
+
+  /* 2. 전환: 마우스 오버 시 5초 동안 서서히 글자 확대 */
+  span.trans-text {
+    transition: font-size 5s;
+  }
+  span.trans-text:hover {
+    font-size: 500%;
+  }
+
+  /* 3. 변환: 2차원 기하학적 변환 */
+  div#rotate-box    { transform: rotate(20deg); }
+  div#skew-box      { transform: skew(0deg, -20deg); }
+  div#translate-box { transform: translateY(100px); }
+  div#scale-box     { transform: scale(3, 1); }
+  div#scale-box:hover { transform: scale(4, 2); }
+</style>
+===================================================================
+```
+
+💡 복사하여 메모장에 저장하신 후 특정 CSS 속성이나 실행 방법에 대해 더 자세히 알아보고 싶은 부분이 있다면 알려주세요!
