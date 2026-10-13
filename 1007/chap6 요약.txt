@@ -1,0 +1,167 @@
+
+
+1. 자바스크립트 코드 작성 위치
+-------------------------------------------------------------------
+- HTML 태그의 이벤트 리스너 속성: onmouseover, onmouseout 등에 작성
+- <script> 태그 내 작성: <head> 또는 <body> 영역에 작성
+- 외부 파일(.js)로 분리: <script src="파일명.js"></script>로 불러옴
+- URL 내 작성: <a href="javascript:..."> 형태로 사용
+
+/* 예제 코드: 작성 위치 4가지 */
+<!-- 1. 이벤트 리스너 속성 -->
+<img src="media/apple.png" alt="이미지"
+     onmouseover="this.src='media/banana.png'"
+     onmouseout="this.src='media/apple.png'">
+
+<!-- 2. <script> 태그 내 함수 -->
+<script>
+  function over(obj) { obj.src = "media/banana.png"; }
+  function out(obj) { obj.src = "media/apple.png"; }
+</script>
+<img src="media/apple.png" alt="이미지" onmouseover="over(this)" onmouseout="out(this)">
+
+<!-- 3. 외부 자바스크립트 파일 불러오기 -->
+<script src="lib.js"></script>
+
+<!-- 4. URL(href)에 작성 -->
+<a href="javascript:alert('클릭하셨어요?')">클릭해보세요</a>
+
+2. 입출력 및 다이얼로그 (Dialogs)
+-------------------------------------------------------------------
+- document.write(): 브라우저 화면에 HTML 콘텐츠 직접 출력
+- prompt("메시지", "기본값"): 사용자로부터 문자열 입력받음
+- confirm("메시지"): 확인(true) / 취소(false) 다이얼로그
+- alert("메시지"): 경고 창 출력
+
+/* 예제 코드: 입출력 및 다이얼로그 */
+<script>
+  // document.write()
+  document.write("<h3>Welcome!</h3>");
+  document.write("2 + 5 는 <br>");
+  document.write("<mark>7 입니다.</mark>");
+
+  // prompt(), confirm(), alert()
+  let name = prompt("이름을 입력하세요", "황기태");
+  let isSend = confirm("전송할까요");
+  alert("클릭하였습니다.");
+</script>
+
+3. 변수, 상수 및 사용 범위 (Scope)
+-------------------------------------------------------------------
+- let: 블록 범위 변수 (재선언 불가)
+- var: 함수/전역 범위 변수 (재선언 가능)
+- const: 블록 범위 상수 (값 변경 불가)
+- 사용 범위: 전역 변수(프로그램 전체), 지역 변수(함수 내), 블록 변수(if/for 등 블록 내)
+
+/* 예제 코드: 변수 사용 범위 */
+<script>
+  let x; // 전역 변수
+
+  function f() {
+    let y; // 함수 f() 내 지역 변수
+    x = 10;
+    y = 20;
+    z = 30; // 키워드 없이 선언 시 전역 변수 생성
+
+    if (y == 20) {
+      let b = 40; // if 블록 내 블록 변수
+      b++;
+    }
+    // 이곳에서는 블록 변수 b 접근 불가
+  }
+</script>
+
+4. 주요 연산자 (Operators)
+-------------------------------------------------------------------
+- 산술/대입/비교/논리 연산자 지원
+- 조건 연산자: (조건) ? 참일때 : 거짓일때
+- 문자열 연결: + 연산자 사용 (숫자+문자열 = 문자열)
+- 비트 연산자: 비트 논리(&, |, ^, ~) 및 시프트(<<, >>, >>>)
+
+/* 예제 코드: 주요 연산자 */
+<script>
+  // 조건 연산자
+  let a = 3, b = 5;
+  let diff = (a > b) ? (a - b) : (b - a);
+
+  // 문자열 연결
+  document.write("abc" + 23);       // "abc23"
+  document.write(23 + 35 + "abc");  // "58abc"
+
+  // 비트 연산
+  let x = 10, y = 3;
+  let bitAnd = x & y;
+  let shiftLeft = x << 1;
+</script>
+
+5. 제어문 (Control Statements)
+-------------------------------------------------------------------
+- 조건문: if-else, switch
+- 반복문: for, while, do-while
+- 제어 키워드: break(반복문 탈출), continue(다음 반복 이동)
+
+/* 예제 코드: 제어문 */
+<script>
+  // 1. if-else 학점 매기기
+  let score = parseInt(prompt("점수 입력", 100));
+  let grade;
+  if (score >= 90) grade = "A";
+  else if (score >= 80) grade = "B";
+  else grade = "F";
+
+  // 2. switch 커피 주문
+  let coffee = prompt("무슨 커피 드릴까요?", "");
+  let price = 0;
+  switch (coffee) {
+    case "espresso":
+    case "에스프레소":
+      price = 2000;
+      break;
+    case "카푸치노":
+      price = 3000;
+      break;
+    default:
+      price = 0;
+  }
+
+  // 3. while 및 break
+  let i = 0, sum = 0;
+  while (true) {
+    sum += i;
+    if (sum > 3000) break;
+    i++;
+  }
+</script>
+
+6. 사용자 정의 함수 및 전역 함수
+-------------------------------------------------------------------
+- 사용자 정의 함수: function 키워드와 return 문 작성
+- eval(expr): 자바스크립트 수식 또는 문장 실행
+- parseInt(str): 문자열을 정수로 변환
+- isNaN(value): 값이 숫자가 아닌지 검사 (숫자가 아니면 true)
+
+/* 예제 코드: 함수 활용 */
+<script>
+  // 사용자 정의 덧셈 함수
+  function adder(a, b) {
+    let sum = a + b;
+    return sum;
+  }
+  let result = adder(24567, 98374);
+
+  // 전역 함수 및 구구단 출력
+  function gugudan(n) {
+    let m = parseInt(n);
+    if (isNaN(m) || m < 1 || m > 9) {
+      alert("잘못입력하셨습니다.");
+      return;
+    }
+    for (let i = 1; i <= 9; i++) {
+      document.write(m + "x" + i + "=" + (m * i) + "<br>");
+    }
+  }
+</script>
+===================================================================
+```
+
+💡 6장의 이벤트 처리나 추가 문법에 대해 더 자세히 확인하고 싶으신 부분이 있다면 편하게 말씀해 주세요!
