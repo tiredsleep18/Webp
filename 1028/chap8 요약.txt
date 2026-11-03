@@ -1,0 +1,184 @@
+
+1. HTML DOM과 DOM 트리 개념
+-------------------------------------------------------------------
+- 브라우저 제공 객체 3가지: 코어 객체(Array, Date 등), BOM 객체(window, location 등), DOM 객체(document, body, HTML 태그)
+- HTML DOM(Document Object Model): 웹 페이지의 각 HTML 태그당 생성되는 객체로, 출력 모양과 콘텐츠를 제어하기 위함
+- DOM 트리: HTML 태그의 포함 관계에 따른 부모-자식 구조의 트리 (루트 객체는 document)
+- DOM 객체의 5가지 구성 요소:
+  1) 프로퍼티(property): HTML 태그 속성 반영
+  2) 메소드(method): DOM 객체의 제어 함수 (focus(), setAttribute() 등)
+  3) 컬렉션(collection): 자식 DOM 객체들의 집합 정보 (children 등)
+  4) 이벤트 리스너(event listener): HTML 태그에 등록된 이벤트 핸들러
+  5) CSS3 스타일 시트(style): HTML 태그의 스타일 지정 정보
+
+/* 예제 8-1: DOM 객체 p의 프로퍼티, 스타일, 이벤트 리스너 출력 */
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HTML DOM 트리</title>
+</head>
+<body>
+  <h3>DOM 객체 p의 프로퍼티, 스타일, 이벤트 리스너</h3>
+  <hr>
+  <p id="firstP" style="color:blue; background:yellow" onclick="this.style.color='teal'">
+    이것은 <span style="color:red">문장입니다.</span>
+  </p>
+  <script>
+    let p = document.getElementById("firstP");
+    let text = "p.id = " + p.id + "\n";
+    text += "p.tagName = " + p.tagName + "\n";
+    text += "p.innerHTML = " + p.innerHTML + "\n";
+    text += "p.style.color = " + p.style.color + "\n";
+    text += "p.onclick = " + p.onclick + "\n";
+    text += "p.childElementCount = " + p.childElementCount + "\n";
+    text += "너비 = " + p.offsetWidth + "\n";
+    text += "높이 = " + p.offsetHeight + "\n";
+    alert(text);
+  </script>
+</body>
+</html>
+
+2. DOM 객체 탐색 및 동적 제어 (스타일, innerHTML, this)
+-------------------------------------------------------------------
+- document.getElementById("id명"): 특정 id를 가진 DOM 객체 리턴
+- CSS3 스타일 동적 변경: style 객체의 프로퍼티 수정 (background-color -> backgroundColor)
+- innerHTML: 시작 태그와 종료 태그 사이의 HTML 콘텐츠 변경
+- this 키워드: 이벤트 리스너에서 이벤트가 발생한 DOM 객체 자신을 가리킴
+
+/* 예제 8-2: CSS3 스타일 동적 변경 */
+<script>
+function change() {
+  let span = document.getElementById("mySpan");
+  span.style.color = "green";
+  span.style.fontSize = "30px";
+  span.style.display = "block";
+  span.style.width = "6em";
+  span.style.border = "3px dotted magenta";
+  span.style.margin = "20px";
+}
+</script>
+<p style="color:blue">이것은 <span id="mySpan" style="color:red">문장입니다.</span></p>
+<input type="button" value="스타일변경" onclick="change()">
+
+/* 예제 8-3: innerHTML을 이용한 콘텐츠 동적 변경 */
+<script>
+function change() {
+  let p = document.getElementById("firstP");
+  p.innerHTML = "생각할수록 <img src='media/apple.png' width='30'> 재밌네요.";
+}
+</script>
+<p id="firstP" onclick="change()">여기를 <span style="color:red">클릭하세요</span></p>
+
+/* 예제 8-4: this 키워드 활용 */
+<script>
+function change(obj, size, color) {
+  obj.style.color = color;
+  obj.style.fontSize = size;
+}
+</script>
+<button onclick="change(this, '30px', 'red')">버튼</button>
+<button onclick="change(this, '30px', 'blue')">버튼</button>
+<div onclick="change(this, '25px', 'orange')">여기 클릭하면 크기와 색 변경</div>
+
+3. document 객체 및 탐색 메소드
+-------------------------------------------------------------------
+- document 객체: HTML 문서 전체를 대변하며 DOM 트리의 최상위 노드
+- document.getElementsByTagName("태그명"): 동일한 태그 이름의 객체들을 컬렉션 배열로 리턴
+- document.getElementsByClassName("클래스명"): 동일한 class 속성의 객체들을 컬렉션 배열로 리턴
+
+/* 예제 8-5: document 객체의 주요 프로퍼티 출력 */
+<script>
+function printProperties() {
+  let text = "1. location = " + document.location + "\n";
+  text += "2. URL = " + document.URL + "\n";
+  text += "3. title = " + document.title + "\n";
+  text += "4. readyState = " + document.readyState + "\n";
+  alert(text);
+}
+</script>
+
+/* 예제 8-6: 태그 이름으로 DOM 객체 찾기 (getElementsByTagName) */
+<script>
+function change() {
+  let spanArray = document.getElementsByTagName("span");
+  for(let i=0; i<spanArray.length; i++) {
+    let span = spanArray[i];
+    span.style.color = "orchid";
+    span.style.fontSize = "20px";
+  }
+}
+</script>
+
+/* 예제 8-7: class 속성으로 DOM 객체 찾기 (getElementsByClassName) */
+<script>
+function viewPlace() {
+  let tagArray = document.getElementsByClassName("place");
+  for(let i=0; i<tagArray.length; i++) {
+    tagArray[i].style.color = "orchid";
+  }
+}
+</script>
+
+4. document.write() 및 문서 생성 (open / close)
+-------------------------------------------------------------------
+- document.write(): HTML 문서 본문에 내용 출력
+- 지연 로딩 시 주의점: 페이지 로드 완료 후(예: 버튼 클릭 이벤트) write()를 호출하면 기존 문서를 지우고 새로 작성함
+- document.open() / document.close(): 새로운 문서를 열고 닫음
+
+/* 예제 8-8: write() 및 writeln() 활용 */
+<script>
+  document.write("<h3>동물원에 소풍갑시다</h3>");
+  document.write("<p style='color:blue'>날씨가 좋아 소풍갑니다</p>");
+  document.write(2 + 3 + "명입니다.<br>");
+</script>
+
+/* 예제 8-10: 새 윈도우에 HTML 문서 출력하기 */
+<script>
+let win = null;
+function showHTML() {
+  if(win == null || win.closed)
+    win = window.open("", "outWin", "width=300,height=200");
+  let textArea = document.getElementById("srcText");
+  win.document.open();
+  win.document.write(textArea.value);
+  win.document.close();
+}
+</script>
+
+5. DOM 객체 동적 생성, 삽입, 삭제
+-------------------------------------------------------------------
+- document.createElement("태그이름"): 새로운 DOM 객체 생성
+- parent.appendChild(child): 생성한 DOM 객체를 부모 노드의 마지막 자식으로 추가
+- parent.removeChild(child): 부모 노드에서 지정한 자식 DOM 객체 삭제
+
+/* 예제 8-11: HTML 태그의 동적 추가 및 삭제 */
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>문서의 동적 구성</title>
+  <script>
+    function createDIV() {
+      let obj = document.getElementById("parent");
+      let newDIV = document.createElement("div");
+      newDIV.innerHTML = "새로 생성된 DIV입니다.";
+      newDIV.setAttribute("id", "myDiv");
+      newDIV.style.backgroundColor = "yellow";
+      
+      // 클릭 시 자기를 삭제하는 이벤트 리스너 추가
+      newDIV.onclick = function() {
+        let p = this.parentElement;
+        p.removeChild(this);
+      };
+      
+      obj.appendChild(newDIV);
+    }
+  </script>
+</head>
+<body id="parent">
+  <h3>DIV 객체를 동적으로 생성, 삽입, 삭제하는 예제</h3>
+  <hr>
+  <a href="javascript:createDIV()">DIV 생성</a>
+</body>
+</html>
