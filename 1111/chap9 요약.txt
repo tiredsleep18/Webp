@@ -1,0 +1,256 @@
+
+
+1. 이벤트 및 이벤트 리스너 개념과 작성 방법 4가지
+-------------------------------------------------------------------
+- 이벤트(Event): 마우스 클릭, 키보드 입력, 문서/이미지 로딩, 타이머 등 상태 변화를 알려주는 통지
+- 이벤트 리스너(Event Listener): 이벤트 발생 시 대처하기 위해 작성된 자바스크립트 코드 (on + 이벤트명)
+- 이벤트 리스너 작성 방법 4가지:
+  1) HTML 태그 속성에 직접 작성 (onmouseover="...")
+  2) DOM 객체의 이벤트 리스너 프로퍼티에 함수 등록 (obj.onmouseover = func;)
+  3) addEventListener() 메소드 사용 (obj.addEventListener("mouseover", func);) [추천]
+  4) 익명 함수(Anonymous Function) 활용
+
+/* 예제 코드: 이벤트 리스너 작성 방법 예시 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>이벤트 리스너 작성 방법</title>
+<script>
+  let p;
+  function init() {
+    p = document.getElementById("p");
+    
+    // 방법 2: DOM 객체 프로퍼티 활용
+    p.onmouseover = over;
+    
+    // 방법 3: addEventListener() 메소드 활용
+    p.addEventListener("mouseout", out);
+    
+    // 방법 4: 익명 함수 활용
+    p.addEventListener("click", function() {
+      alert("클릭되었습니다!");
+    });
+  }
+  function over() { this.style.backgroundColor = "orchid"; }
+  function out() { this.style.backgroundColor = "white"; }
+</script>
+</head>
+<!-- 방법 1: HTML 태그 속성 및 body onload -->
+<body onload="init()">
+  <h3>이벤트 리스너 작성 예제</h3>
+  <hr>
+  <p id="p" onmouseover="this.style.backgroundColor='orchid'">
+    마우스를 올리거나 클릭해보세요.
+  </p>
+</body>
+</html>
+
+2. 이벤트 객체 및 디폴트 행동 취소 (preventDefault)
+-------------------------------------------------------------------
+- 이벤트 객체(Event Object): 발생한 이벤트의 상세 정보(타입, 좌표, 타겟 등)를 담은 객체
+- 이벤트 리스너 함수의 첫 번째 매개변수(e) 또는 HTML 속성의 'event'로 전달받음
+- 주요 프로퍼티: type(이벤트 종류), target(이벤트를 유발시킨 DOM 객체), currentTarget(현재 리스너 실행 중인 객체)
+- 디폴트 행동 취소: e.preventDefault() 호출 또는 리스너에서 return false (링크 이동, 폼 전송, 우클릭 컨텍스트 메뉴 금지 등)
+
+/* 예제 코드: 이벤트 객체 활용 및 디폴트 행동 취소 (우클릭 금지, 링크 이동 차단) */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>이벤트 객체 및 디폴트 행동 취소</title>
+<script>
+  // 마우스 우클릭(컨텍스트 메뉴) 금지
+  document.oncontextmenu = function(e) {
+    alert("오른쪽 클릭(컨텍스트 메뉴)이 금지되어 있습니다.");
+    return false; // 디폴트 행동 취소 (또는 e.preventDefault();)
+  };
+
+  // 링크 클릭 시 이동 여부 확인 후 취소
+  function checkLink(e) {
+    let ret = confirm("네이버로 이동하시겠습니까?");
+    if(!ret) {
+      e.preventDefault(); // 이동 강제 취소
+    }
+  }
+</script>
+</head>
+<body>
+  <h3>이벤트 객체 및 디폴트 행동 취소</h3>
+  <hr>
+  <a href="https://www.naver.com" onclick="checkLink(event)">네이버 이동 링크</a>
+</body>
+</html>
+
+3. 이벤트 흐름 (Event Flow: 캡처 및 버블)
+-------------------------------------------------------------------
+- 이벤트 흐름: 이벤트가 발생하면 window → DOM 트리를 따라 타겟 객체로 이동한 후, 다시 역방향으로 window까지 전달되는 과정
+  1) 캡처 단계(Capturing Phase): window 객체에서 중간 DOM 객체들을 거쳐 타겟 객체로 내려가는 과정
+  2) 버블 단계(Bubbling Phase): 타겟 객체에서 중간 DOM 객체들을 거쳐 window 객체로 올라가는 과정
+- addEventListener("click", func, useCapture): 3번째 매개변수가 true면 캡처 리스너, false/생략 시 버블 리스너로 등록
+- e.stopPropagation(): 이벤트의 전파(캡처/버블)를 중단시킴
+
+/* 예제 코드: 캡처 단계와 버블 단계 리스너 등록 */
+<script>
+  let b = document.getElementById("button");
+  
+  // 캡처 단계 리스너 (3번째 인자: true)
+  b.addEventListener("click", function(e) {
+    console.log("캡처 단계: " + e.currentTarget.tagName);
+  }, true);
+
+  // 버블 단계 리스너 (3번째 인자: false)
+  b.addEventListener("click", function(e) {
+    console.log("버블 단계: " + e.currentTarget.tagName);
+  }, false);
+</script>
+
+4. 마우스 이벤트 처리 및 마우스 위치 제어
+-------------------------------------------------------------------
+- 마우스 이벤트 종류: onclick, ondblclick, onmousedown, onmouseup, onmouseover, onmouseout, onmousemove, onwheel
+- 마우스 좌표 프로퍼티:
+  * screenX, screenY: 화면(스크린) 전체 기준 좌표
+  * clientX, clientY: 브라우저 문서 출력 영역 기준 좌표
+  * offsetX, offsetY: 타겟 DOM 객체 내부 기준 좌표
+- 마우스 휠(onwheel): e.wheelDelta (양수 120: 위쪽 굴림, 음수 -120: 아래쪽 굴림)
+
+/* 예제 코드: 마우스 이동 좌표 출력 및 휠 이벤트 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>마우스 이벤트 및 좌표</title>
+<script>
+  function showPos(e) {
+    let div = document.getElementById("posDiv");
+    let text = "screenX/Y: " + e.screenX + ", " + e.screenY + "<br>";
+    text += "clientX/Y: " + e.clientX + ", " + e.clientY + "<br>";
+    text += "offsetX/Y: " + e.offsetX + ", " + e.offsetY;
+    div.innerHTML = text;
+  }
+</script>
+</head>
+<body>
+  <h3>마우스 위치 좌표 측정</h3>
+  <hr>
+  <img src="media/beach.png" onmousemove="showPos(event)" width="300">
+  <div id="posDiv" style="background:skyblue; width:250px; padding:10px;"></div>
+</body>
+</html>
+
+5. 문서 및 이미지 로딩 이벤트 (onload & Image 객체)
+-------------------------------------------------------------------
+- onload: 웹 페이지나 이미지 등의 로딩이 완료되었을 때 실행되는 이벤트
+- 주의사항: 자바스크립트로 이미지 폭/높이(img.width)를 읽을 때는 반드시 img.onload 리스너 내부에서 처리해야 정확한 크기 취득 가능 (로딩 전 읽으면 0)
+- new Image(): 자바스크립트로 동적 이미지 객체 생성 및 이미지 미리 로딩(Preloading) 구현
+
+/* 예제 코드: Image 객체로 미리 로딩(Preloading) 후 이미지 전환 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>new Image() 이미지 미리 로딩</title>
+<script>
+  // 이미지 배열 미리 로딩
+  let files = ["media/apple.png", "media/banana.png", "media/mango.png"];
+  let imgs = new Array();
+  for(let i=0; i<files.length; i++) {
+    imgs[i] = new Image();
+    imgs[i].src = files[i]; // 미리 로딩 시작
+  }
+
+  let next = 0;
+  function changeImage() {
+    let img = document.getElementById("myImg");
+    img.src = imgs[next].src;
+    next = (next + 1) % imgs.length;
+  }
+</script>
+</head>
+<body>
+  <h3>이미지 클릭 시 다음 이미지 전환 (Preloading)</h3>
+  <hr>
+  <img id="myImg" src="media/apple.png" onclick="changeImage()" width="150">
+</body>
+</html>
+
+6. 폼(Form) 요소 이벤트 및 객체 조작 (focus, blur, checkbox, radio, select)
+-------------------------------------------------------------------
+- onfocus / onblur: 포커스를 얻거나 잃을 때 발생 (입력 유효성 검사 등에 활용)
+- radio / checkbox: document.getElementsByName()으로 배열 취득, .checked 프로퍼티로 선택 여부 확인
+- select / onchange: 콤보박스 선택 변경 시 발생, selectedIndex 및 options[index].value로 선택 옵션 확인
+
+/* 예제 코드: 체크박스 선택 금액 자동 계산 & Select 객체 변경 연동 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>폼 요소 이벤트 처리</title>
+<script>
+  // 체크박스 선택 합계 계산
+  let sum = 0;
+  function calc(cBox) {
+    if(cBox.checked) sum += parseInt(cBox.value);
+    else sum -= parseInt(cBox.value);
+    document.getElementById("sumText").value = sum;
+  }
+
+  // Select 콤보박스 연동
+  function updateFruit() {
+    let sel = document.getElementById("fruitSelect");
+    let val = sel.options[sel.selectedIndex].value;
+    document.getElementById("selResult").innerHTML = "선택한 과일 값: " + val;
+  }
+</script>
+</head>
+<body>
+  <h3>체크박스 및 셀렉트 객체 이벤트</h3>
+  <hr>
+  <form>
+    <input type="checkbox" value="10000" onclick="calc(this)"> 모자 (1만원)
+    <input type="checkbox" value="30000" onclick="calc(this)"> 구두 (3만원)<br>
+    지불 금액: <input type="text" id="sumText" value="0" readonly><br><br>
+
+    <select id="fruitSelect" onchange="updateFruit()">
+      <option value="strawberry">딸기</option>
+      <option value="banana">바나나</option>
+      <option value="apple">사과</option>
+    </select>
+    <span id="selResult"></span>
+  </form>
+</body>
+</html>
+
+7. 키보드 이벤트 (Keyboard Events: keydown, keypress, keyup)
+-------------------------------------------------------------------
+- onkeydown: 모든 키가 눌러지는 순간 발생 (기능키, 화살표키 포함)
+- onkeypress: 문자 키, Enter, Space, Esc 등이 눌러지는 순간 추가 발생
+- onkeyup: 눌러진 키가 떼어지는 순간 발생
+- 키 이벤트 객체 프로퍼티: e.key (입력된 문자/키 이름), e.code (키보드의 물리적 키 코드)
+
+/* 예제 코드: 화살표 키 입력 감지 (onkeydown) */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>키 이벤트 처리</title>
+<script>
+  window.onkeydown = function(e) {
+    let div = document.getElementById("keyDiv");
+    div.innerHTML = "눌러진 키(e.key): " + e.key + "<br>물리 코드(e.code): " + e.code;
+    
+    if(e.key === "ArrowDown") {
+      div.style.backgroundColor = "violet";
+    } else if(e.key === "ArrowUp") {
+      div.style.backgroundColor = "skyblue";
+    }
+  };
+</script>
+</head>
+<body>
+  <h3>키보드 화살표 키 감지 예제</h3>
+  <hr>
+  <p>키보드의 아무 키나 눌러보세요. (상/하 화살표 키 누르면 배경색 변경)</p>
+  <div id="keyDiv" style="background:lightgray; padding:15px; width:300px;"></div>
+</body>
+</html>
