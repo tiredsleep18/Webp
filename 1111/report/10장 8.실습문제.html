@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>산수를 풀어 봅시다</title>
+
+    <script>
+        let show = null;
+        let count = 0;
+
+        function ontime() {
+            const time = document.getElementById("time");
+
+            if (show !== null) {
+                clearTimeout(show);
+            }
+
+            document.getElementById("grade").innerHTML = "0";
+            count = 10;
+            time.innerHTML = count;
+
+            show = setTimeout(() => outtime(time), 1000);
+        }
+
+        function outtime(time) {
+            count--;
+            time.innerHTML = count;
+
+            if (count > 0) {
+                show = setTimeout(() => outtime(time), 1000);
+            } else {
+                correct();
+                show = null;
+            }
+        }
+
+        function make() {
+            const one = document.getElementsByClassName("one");
+            const two = document.getElementsByClassName("two");
+
+            for (let i = 0; i < one.length; i++) {
+                let num1 = Math.floor(Math.random() * 99) + 1;
+                let num2 = Math.floor(Math.random() * 99) + 1;
+                const op = Math.floor(Math.random() * 4);
+                let operator;
+
+                switch (op) {
+                    case 0:
+                        operator = "+";
+                        break;
+                    case 1:
+                        operator = "-";
+                        break;
+                    case 2:
+                        operator = "*";
+                        break;
+                    case 3:
+                        operator = "/";
+                        num1 = num1 - (num1 % num2); // 정수 나눗셈
+                        if (num1 === 0) num1 = num2;
+                        break;
+                }
+
+                one[i].innerHTML = `${num1} ${operator} ${num2}`;
+                one[i].style.textDecoration = "none";
+                two[i].value = "";
+            }
+        }
+
+        function correct() {
+            let total = 0;
+
+            const one = document.getElementsByClassName("one");
+            const two = document.getElementsByClassName("two");
+
+            for (let i = 0; i < one.length; i++) {
+                const question = one[i].innerHTML;
+                const correctAnswer = eval(question);
+                const userAnswer = two[i].value.trim();
+
+                if (userAnswer !== "" &&
+                    !isNaN(userAnswer) &&
+                    Number(userAnswer) === correctAnswer) {
+
+                    total++;
+                    one[i].style.textDecoration = "none";
+                } else {
+                    one[i].style.textDecoration = "line-through";
+                }
+            }
+
+            document.getElementById("grade").innerHTML = total;
+        }
+    </script>
+</head>
+
+<body onload="make()">
+    <h3>산수 문제를 풀어 봅시다.</h3>
+    <p>문제는 자동으로 생성되며, 10초가 지나면 자동 채점됩니다.</p>
+
+    <div>
+        남은 시간: <span id="time">0</span>초
+    </div>
+
+    <hr>
+
+    <table>
+        <tr>
+            <td class="one"></td>
+            <td><input type="text" class="two" size="8"></td>
+        </tr>
+        <tr>
+            <td class="one"></td>
+            <td><input type="text" class="two" size="8"></td>
+        </tr>
+        <tr>
+            <td class="one"></td>
+            <td><input type="text" class="two" size="8"></td>
+        </tr>
+        <tr>
+            <td class="one"></td>
+            <td><input type="text" class="two" size="8"></td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" onclick="make(); ontime()">
+                    다시
+                </button>
+            </td>
+            <td>
+                <span id="grade">0</span>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
