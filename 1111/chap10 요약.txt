@@ -1,0 +1,267 @@
+
+
+1. 브라우저 관련 객체 개요 (BOM: Browser Object Model)
+-------------------------------------------------------------------
+- BOM(Browser Object Model): 자바스크립트로 브라우저의 모양이나 기능을 제어하기 위해 제공되는 객체군.
+- 국제 표준이 없으므로 브라우저 종류마다 프로퍼티나 메소드가 조금씩 다를 수 있음.
+- 주요 BOM 객체 종류:
+  * window: 브라우저 윈도우 모양 제어, 새 윈도우 열기/닫기 등 최상위 객체.
+  * location: 현재 로드된 HTML 페이지의 URL 주소 관리 및 웹 페이지 이동.
+  * navigator: 브라우저 종류, 버전, 플러그인 등 동작 중인 브라우저 정보 제공.
+  * screen: 브라우저가 실행되는 스크린 장치의 해상도 및 색상 정보 제공.
+  * history: 윈도우에서 최근 로드한 URL 리스트(방문 기록) 관리.
+
+2. window 객체 및 윈도우 열기/닫기
+-------------------------------------------------------------------
+- window 객체 생성: 새 웹 페이지 로드 시, <iframe> 태그 당 하나, 또는 자바스크립트로 윈도우 열기 시 생성.
+- window.open(sURL, sWindowName, sFeature): 새 윈도우를 열고 지정된 URL 출력.
+  * sWindowName: "_blank"(새 윈도우), "_self"(현재 윈도우), "_parent", "_top" 또는 사용자 정의 이름.
+  * sFeature: "left=300,top=300,width=400,height=300" 등 윈도우 모양/크기 속성.
+- window.close(): 윈도우 닫기. (보안상 자신이 자바스크립트로 연 윈도우만 닫기 허용됨)
+
+/* 예제 10-1 & 10-2: window.open() 및 close() 활용 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>윈도우 열기 및 닫기</title>
+<script>
+  let newWin = null;
+  function load(url) {
+    // myWin이라는 이름의 새 윈도우 생성 (300,300 위치, 400x300 크기)
+    newWin = window.open(url, "myWin", "left=300,top=300,width=400,height=300");
+  }
+  function closeNewWindow() {
+    if(newWin == null || newWin.closed) return;
+    newWin.close(); // 자신이 생성한 새 윈도우 닫기
+  }
+</script>
+</head>
+<body>
+  <h3>window.open() 및 close() 예제</h3>
+  <hr>
+  <a href="javascript:load('http://www.disneyworld.com')">새 윈도우 열기</a><br>
+  <a href="javascript:window.close()">현재 윈도우 닫기</a><br>
+  <a href="javascript:closeNewWindow()">새 윈도우 닫기</a>
+</body>
+</html>
+
+3. window 객체의 타이머 활용 (setTimeout / setInterval)
+-------------------------------------------------------------------
+- setTimeout(code, msec) / clearTimeout(timerID): msec 밀리초 후 타임아웃 코드를 1회 실행 / 타이머 취소.
+- setInterval(code, msec) / clearInterval(timerID): msec 밀리초 주기마다 타임아웃 코드를 무한 반복 실행 / 타이머 취소.
+
+/* 예제 10-3: setTimeout() 마우스 오버 5초 후 자동 연결 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>setTimeout() 웹 페이지 자동 연결</title>
+<script>
+  let timerID = null;
+  function startTimer(time) {
+    timerID = setTimeout(function() {
+      window.location = "http://www.naver.com";
+    }, time);
+  }
+  function cancelTimer() {
+    if(timerID != null) clearTimeout(timerID);
+  }
+</script>
+</head>
+<body>
+  <h3>이미지에 마우스를 올리고 5초간 있으면 네이버로 이동합니다</h3>
+  <hr>
+  <img src="media/naver.gif" onmouseover="startTimer(5000)" onmouseout="cancelTimer()">
+</body>
+</html>
+
+/* 예제 10-4: setInterval()로 텍스트 회전 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>setInterval() 텍스트 회전</title>
+</head>
+<body>
+  <h3>텍스트 자동 회전 (클릭 시 중단)</h3>
+  <hr>
+  <div><span id="span" style="background-color:yellow">자동 회전하는 텍스트입니다. </span></div>
+  <script>
+    let span = document.getElementById("span");
+    let timerID = setInterval(doRotate, 200);
+
+    span.onclick = function() {
+      clearInterval(timerID); // 클릭 시 타이머 해제
+    };
+
+    function doRotate() {
+      let str = span.innerHTML;
+      let firstChar = str.substr(0, 1);
+      let remains = str.substr(1, str.length - 1);
+      span.innerHTML = remains + firstChar;
+    }
+  </script>
+</body>
+</html>
+
+4. 윈도우 위치/크기 조절, 스크롤, 인쇄
+-------------------------------------------------------------------
+- 윈도우 위치 이동: moveBy(dx, dy) - 상대 이동 / moveTo(x, y) - 절대 위치 이동.
+- 윈도우 크기 조절: resizeBy(dw, dh) - 상대 조절 / resizeTo(w, h) - 절대 크기 조절.
+- 웹 페이지 스크롤: scrollBy(dx, dy) - 상대 스크롤 / scrollTo(x, y) - 특정 위치로 스크롤.
+- 웹 페이지 인쇄: window.print() 호출 시 인쇄 다이얼로그 출력.
+- 인쇄 전후 이벤트:
+  * onbeforeprint: 인쇄 직전 실행 (예: 숨겨둔 회사 로고 이미지 display:block으로 출력).
+  * onafterprint: 인쇄 완료/취소 직후 실행 (예: 로고 이미지 display:none으로 다시 숨김).
+
+/* 예제 10-6 & 10-8: 자동 스크롤 및 인쇄 전후 이벤트 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>스크롤 및 인쇄 이벤트</title>
+<style>
+  #logoDiv { display: none; position: absolute; left: 0; top: 0; }
+</style>
+<script>
+  // 1초 간격으로 10px씩 자동 스크롤
+  function startScroll() {
+    setInterval(function() { window.scrollBy(0, 10); }, 1000);
+  }
+  // 인쇄 시에만 회사 로고 출력
+  window.onbeforeprint = function() {
+    document.getElementById("logoDiv").style.display = "block";
+  };
+  window.onafterprint = function() {
+    document.getElementById("logoDiv").style.display = "none";
+  };
+</script>
+</head>
+<body onload="startScroll()">
+  <div id="logoDiv"><img src="media/logo.png" alt="로고"></div>
+  <h3>자동 스크롤 및 인쇄 예제</h3>
+  <hr>
+  <button onclick="window.print()">웹 페이지 인쇄하기</button>
+  <p>스크롤이 작동하면서 인쇄 시 로고가 함께 출력됩니다.</p>
+</body>
+</html>
+
+5. location 객체 (URL 관리 및 페이지 이동)
+-------------------------------------------------------------------
+- location 객체 프로퍼티: href(전체 URL), protocol, hostname, port, pathname, search(쿼리스트링), hash.
+- 웹 페이지 이동 방법:
+  * window.location = "URL";
+  * window.location.href = "URL";
+  * window.location.assign("URL");
+  * window.location.replace("URL"); (히스토리에 남지 않고 현재 페이지 대체)
+
+/* 예제 10-9: location 객체로 웹 사이트 접속 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>window.location 접속</title>
+<script>
+  function loadSite() {
+    let select = document.getElementById("site");
+    window.location = select.options[select.selectedIndex].value;
+  }
+</script>
+</head>
+<body>
+  <h3>window.location으로 웹 사이트 접속</h3>
+  <hr>
+  사이트 선택 : 
+  <select id="site">
+    <option value="http://www.naver.com" selected>네이버</option>
+    <option value="http://www.google.com">구글</option>
+    <option value="http://www.microsoft.com">마이크로소프트</option>
+  </select>
+  <button onclick="loadSite()">웹 사이트 접속</button>
+</body>
+</html>
+
+6. navigator 객체 (브라우저 정보 확인)
+-------------------------------------------------------------------
+- 브라우저 정보 프로퍼티: appName, appVersion, platform, userAgent, vendor, language, onLine, cookieEnabled 등.
+- plugins 컬렉션: 브라우저에 설치된 플러그인 목록 정보 제공.
+
+/* 예제 10-10: navigator 브라우저 정보 및 플러그인 출력 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>브라우저 정보 출력</title>
+<script>
+  function printNavigator() {
+    let text = "appName: " + navigator.appName + "<br>";
+    text += "appVersion: " + navigator.appVersion + "<br>";
+    text += "userAgent: " + navigator.userAgent + "<br>";
+    text += "language: " + navigator.language + "<br>";
+    text += "onLine: " + navigator.onLine + "<br>";
+    text += "plugins count: " + navigator.plugins.length + "<br>";
+    document.getElementById("div").innerHTML = text;
+  }
+</script>
+</head>
+<body onload="printNavigator()">
+  <h3>브라우저 정보 출력</h3>
+  <hr>
+  <div id="div"></div>
+</body>
+</html>
+
+7. screen 객체 (스크린 장치 정보)
+-------------------------------------------------------------------
+- screen 객체 프로퍼티:
+  * width, height: 스크린 해상도의 수평/수직 픽셀 수.
+  * availWidth, availHeight: 작업 표시줄 등을 제외한 출력 가능 영역의 폭과 높이.
+  * colorDepth, pixelDepth: 픽셀당 표현 가능한 색상 비트 수.
+
+/* 예제 10-11: 스크린 정보 출력 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>스크린 장치 정보</title>
+<script>
+  function printScreen() {
+    let text = "width: " + screen.width + "<br>";
+    text += "height: " + screen.height + "<br>";
+    text += "availWidth: " + screen.availWidth + "<br>";
+    text += "availHeight: " + screen.availHeight + "<br>";
+    text += "colorDepth: " + screen.colorDepth + "<br>";
+    document.getElementById("div").innerHTML = text;
+  }
+</script>
+</head>
+<body onload="printScreen()">
+  <h3>스크린 장치 정보</h3>
+  <hr>
+  <div id="div"></div>
+</body>
+</html>
+
+8. history 객체 (방문 기록 제어)
+-------------------------------------------------------------------
+- history 객체 프로퍼티 & 메소드:
+  * length: 방문 기록 히스토리 리스트의 엔트리 개수.
+  * history.back() 또는 history.go(-1): 이전 페이지로 이동.
+  * history.forward() 또는 history.go(1): 다음 페이지로 이동.
+
+/* 예제 10-12: history 객체 활용 */
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>history 객체 활용</title>
+</head>
+<body>
+  <h3>history 객체 활용</h3>
+  <hr>
+  <button onclick="history.back()">back()</button>
+  <button onclick="history.forward()">forward()</button>
+  <button onclick="history.go(-1)">go(-1)</button>
+</body>
+</html>
